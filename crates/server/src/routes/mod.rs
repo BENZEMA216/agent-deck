@@ -30,6 +30,7 @@ pub mod search;
 pub mod sessions;
 pub mod tags;
 pub mod terminal;
+pub mod webrtc;
 pub mod workspaces;
 
 pub fn router(deployment: DeploymentImpl) -> IntoMakeService<Router> {
@@ -54,6 +55,7 @@ pub fn router(deployment: DeploymentImpl) -> IntoMakeService<Router> {
         .merge(sessions::router(&deployment))
         .merge(terminal::router())
         .nest("/remote", remote::router())
+        .merge(webrtc::router(&deployment))
         .nest("/attachments", attachments::routes())
         .layer(axum::middleware::from_fn_with_state(
             deployment.clone(),
