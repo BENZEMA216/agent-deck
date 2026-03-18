@@ -1,11 +1,16 @@
-use std::{sync::Arc, time::Duration};
+use std::{panic::AssertUnwindSafe, sync::Arc, time::Duration};
 
 use chrono::{DateTime, Days, Timelike, Utc};
+use futures::FutureExt;
 use sqlx::PgPool;
 use tokio::task::JoinHandle;
 use tracing::{error, info, warn};
 
-use crate::{db::digest::DigestRepository, digest::run_email_digest, mail::Mailer};
+use crate::{
+    db::digest::{DigestRepository, DigestRunLock},
+    digest::run_email_digest,
+    mail::Mailer,
+};
 
 const DEFAULT_WINDOW: Duration = Duration::from_secs(86400);
 const DEFAULT_RUN_HOUR_UTC: u32 = 8;
@@ -50,7 +55,7 @@ pub fn spawn_digest_task(
     }
 
     tokio::spawn(async move {
-        let result = std::panic::AssertUnwindSafe(digest_loop(
+        let result = AssertUnwindSafe(digest_loop(
             &pool,
             mailer.as_ref(),
             &base_url,
@@ -60,7 +65,7 @@ pub fn spawn_digest_task(
             send_delay,
         ));
 
-        if let Err(panic) = futures::FutureExt::catch_unwind(result).await {
+        if let Err(panic) = result.catch_unwind().await {
             let msg = panic
                 .downcast_ref::<&str>()
                 .map(|s| s.to_string())
@@ -118,7 +123,7 @@ async fn digest_loop(
     }
 }
 
-async fn acquire_run_lock(pool: &PgPool) -> Option<crate::db::digest::DigestRunLock> {
+async fn acquire_run_lock(pool: &PgPool) -> Option<DigestRunLock> {
     match DigestRepository::try_acquire_run_lock(pool).await {
         Ok(Some(lock)) => Some(lock),
         Ok(None) => {
