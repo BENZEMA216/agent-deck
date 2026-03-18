@@ -6583,6 +6583,7 @@ dependencies = [
  "http",
  "relay-client",
  "relay-control",
+ "relay-tunnel",
  "relay-types",
  "relay-webrtc",
  "relay-ws",
