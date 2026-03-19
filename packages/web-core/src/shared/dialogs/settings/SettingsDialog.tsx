@@ -4,11 +4,8 @@ import { useTranslation } from 'react-i18next';
 import {
   GearIcon,
   GitBranchIcon,
-  BuildingsIcon,
-  CloudIcon,
   CpuIcon,
   PlugIcon,
-  BroadcastIcon,
   CaretLeftIcon,
   XIcon,
 } from '@phosphor-icons/react';
@@ -34,11 +31,12 @@ const SETTINGS_SECTIONS: {
 }[] = [
   { id: 'general', icon: GearIcon },
   { id: 'repos', icon: GitBranchIcon },
-  { id: 'organizations', icon: BuildingsIcon },
-  { id: 'remote-projects', icon: CloudIcon },
+  // Cloud sections removed for local-only use:
+  // { id: 'organizations', icon: BuildingsIcon },
+  // { id: 'remote-projects', icon: CloudIcon },
   { id: 'agents', icon: CpuIcon },
   { id: 'mcp', icon: PlugIcon },
-  { id: 'relay', icon: BroadcastIcon },
+  // { id: 'relay', icon: BroadcastIcon },
 ];
 
 export interface SettingsDialogProps {

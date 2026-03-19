@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { OnboardingSignInPage } from '@/features/onboarding/ui/OnboardingSignInPage';
+import { createFileRoute, Navigate } from '@tanstack/react-router';
 
 function OnboardingSignInRouteComponent() {
-  return <OnboardingSignInPage />;
+  // Auth removed for local-only use — redirect to agents
+  return <Navigate to="/agents" replace />;
 }
 
 export const Route = createFileRoute('/onboarding_/sign-in')({

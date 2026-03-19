@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { LandingPage } from '@/features/onboarding/ui/LandingPage';
+import { createFileRoute, Navigate } from '@tanstack/react-router';
 
 function OnboardingLandingRouteComponent() {
-  return <LandingPage />;
+  // Onboarding removed for local-only use — redirect to agents
+  return <Navigate to="/agents" replace />;
 }
 
 export const Route = createFileRoute('/onboarding')({

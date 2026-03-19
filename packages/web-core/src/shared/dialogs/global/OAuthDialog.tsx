@@ -33,6 +33,15 @@ type OAuthState =
 
 const OAuthDialogImpl = create<OAuthDialogProps>(({ initialProvider }) => {
   const modal = useModal();
+
+  // Disabled for local-only use — immediately close and resolve with null
+  useEffect(() => {
+    if (modal.visible) {
+      modal.resolve(null);
+      modal.remove();
+    }
+  }, [modal, modal.visible]);
+  void initialProvider; // keep param used
   const { t } = useTranslation('common');
   const queryClient = useQueryClient();
   const { reloadSystem } = useUserSystem();

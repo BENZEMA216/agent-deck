@@ -32,32 +32,56 @@ function SessionStatusBadge({ status }: { status: AgentSession['status'] }) {
   );
 }
 
+function getConnectionInfo(agent: AgentRecord): { label: string; value: string } {
+  const config = agent.connection_config;
+  if (agent.agent_type === 'openclaw') {
+    return {
+      label: 'WebSocket URL',
+      value: (config.url as string) ?? 'ws://localhost:18789',
+    };
+  }
+  if (agent.agent_type === 'claude_code') {
+    return {
+      label: 'CLI Path',
+      value: (config.cli_path as string) ?? '~/.local/bin/claude',
+    };
+  }
+  if (agent.agent_type === 'codex') {
+    return {
+      label: 'CLI Path',
+      value: (config.cli_path as string) ?? '/opt/homebrew/bin/codex',
+    };
+  }
+  return {
+    label: 'Connection',
+    value: (config.url as string) ?? (config.cli_path as string) ?? '--',
+  };
+}
+
 function OverviewTab({ agent }: { agent: AgentRecord }) {
   const { data: status } = useAgentStatus(agent.id);
   const health = status?.health ?? agent.status?.health;
+  const conn = getConnectionInfo(agent);
 
   return (
     <div className="space-y-4">
+      {/* Connection info */}
+      <div>
+        <h4 className="text-sm font-medium text-low mb-1">{conn.label}</h4>
+        <div className="font-ibm-plex-mono text-sm text-high bg-secondary rounded border px-base py-1.5 truncate">
+          {conn.value}
+        </div>
+      </div>
+
+      {/* Health */}
       {health && (
         <div>
           <h4 className="text-sm font-medium text-low mb-1">Health</h4>
-          <div className="flex items-center gap-2">
-            <HealthIndicator health={health} />
-            <span className="text-base text-normal capitalize">
-              {health.status}
-            </span>
-            {health.status === 'healthy' && (
-              <span className="text-xs text-low">
-                ({health.latency_ms}ms)
-              </span>
-            )}
-            {health.status === 'degraded' && (
-              <span className="text-xs text-low">{health.reason}</span>
-            )}
-          </div>
+          <HealthIndicator health={health} verbose />
         </div>
       )}
 
+      {/* Capabilities */}
       <div>
         <h4 className="text-sm font-medium text-low mb-1">Capabilities</h4>
         <div className="flex flex-wrap gap-1">
@@ -113,11 +137,11 @@ function SessionsTab({ agentId }: { agentId: string }) {
   const { data: sessions, isLoading } = useAgentSessions(agentId);
 
   if (isLoading) {
-    return <div className="text-sm text-low">Loading sessions...</div>;
+    return <div className="text-sm font-ibm-plex-mono text-low">loading...</div>;
   }
 
   if (!sessions || sessions.length === 0) {
-    return <div className="text-sm text-low">No sessions found.</div>;
+    return <div className="text-sm font-ibm-plex-mono text-low">no sessions</div>;
   }
 
   return (
@@ -142,11 +166,65 @@ function SessionsTab({ agentId }: { agentId: string }) {
   );
 }
 
-function ConfigTab({ config }: { config: Record<string, unknown> }) {
+function ConfigTab({
+  config,
+  agentId,
+}: {
+  config: Record<string, unknown>;
+  agentId: string;
+}) {
+  const { refetch, isFetching } = useAgentStatus(agentId);
+  const [testResult, setTestResult] = useState<string | null>(null);
+
+  const handleTestConnection = () => {
+    setTestResult(null);
+    refetch().then(
+      (result) => {
+        if (result.data) {
+          setTestResult(`ok: ${result.data.health.status}`);
+        } else if (result.error) {
+          setTestResult(
+            `error: ${result.error instanceof Error ? result.error.message : 'unknown'}`
+          );
+        }
+      },
+      (err: unknown) => {
+        setTestResult(
+          `error: ${err instanceof Error ? err.message : 'unknown'}`
+        );
+      }
+    );
+  };
+
+  // Format JSON with syntax highlighting via classes
+  const configJson = JSON.stringify(config, null, 2);
+
   return (
-    <pre className="bg-panel rounded border p-base text-xs font-ibm-plex-mono text-normal overflow-auto max-h-64">
-      {JSON.stringify(config, null, 2)}
-    </pre>
+    <div className="space-y-4">
+      <pre className="bg-secondary rounded border p-base text-xs font-ibm-plex-mono text-normal overflow-auto max-h-64 leading-relaxed">
+        {configJson}
+      </pre>
+
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={handleTestConnection}
+          disabled={isFetching}
+          className="px-base py-1.5 rounded border border-brand bg-brand/10 text-xs font-ibm-plex-mono text-high hover:bg-brand/20 focus:outline-none focus:ring-1 focus:ring-brand disabled:opacity-50"
+        >
+          {isFetching ? 'testing...' : 'Test Connection'}
+        </button>
+        {testResult && (
+          <span
+            className={`text-xs font-ibm-plex-mono ${
+              testResult.startsWith('ok') ? 'text-success' : 'text-error'
+            }`}
+          >
+            {testResult}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -169,7 +247,7 @@ export function AgentDetailPanel({ agent, onClose }: AgentDetailPanelProps) {
     <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-primary border-l border-border shadow-lg flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-base border-b border-border">
-        <h2 className="text-lg font-medium text-high truncate">
+        <h2 className="text-lg font-ibm-plex-mono font-medium text-high truncate">
           {agent.display_name}
         </h2>
         <button
@@ -188,7 +266,7 @@ export function AgentDetailPanel({ agent, onClose }: AgentDetailPanelProps) {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`px-base py-2 text-sm transition-colors ${
+            className={`px-base py-2 text-sm font-ibm-plex-mono transition-colors ${
               activeTab === tab.id
                 ? 'text-high border-b-2 border-brand'
                 : 'text-low hover:text-normal'
@@ -204,7 +282,7 @@ export function AgentDetailPanel({ agent, onClose }: AgentDetailPanelProps) {
         {activeTab === 'overview' && <OverviewTab agent={agent} />}
         {activeTab === 'sessions' && <SessionsTab agentId={agent.id} />}
         {activeTab === 'config' && (
-          <ConfigTab config={agent.connection_config} />
+          <ConfigTab config={agent.connection_config} agentId={agent.id} />
         )}
       </div>
     </div>

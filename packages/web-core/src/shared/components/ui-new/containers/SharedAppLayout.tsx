@@ -278,20 +278,10 @@ export function SharedAppLayout() {
     }
   }, []);
 
-  const handleMigrate = useCallback(async () => {
-    if (!isSignedIn) {
-      try {
-        const profile = await OAuthDialog.show({});
-        if (profile) {
-          appNavigation.goToMigrate();
-        }
-      } catch {
-        // Dialog cancelled
-      }
-    } else {
-      appNavigation.goToMigrate();
-    }
-  }, [isSignedIn, appNavigation]);
+  // Migration disabled for local-only use
+  const handleMigrate = useCallback(() => {
+    // no-op
+  }, []);
 
   return (
     <SyncErrorProvider>

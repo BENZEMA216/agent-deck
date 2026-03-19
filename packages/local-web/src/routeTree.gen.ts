@@ -271,13 +271,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/agents': {
-      id: '/_app/agents'
-      path: '/agents'
-      fullPath: '/agents'
-      preLoaderRoute: typeof AppAgentsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/workspaces': {
       id: '/_app/workspaces'
       path: '/workspaces'
@@ -297,6 +290,13 @@ declare module '@tanstack/react-router' {
       path: '/migrate'
       fullPath: '/migrate'
       preLoaderRoute: typeof AppMigrateRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/agents': {
+      id: '/_app/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AppAgentsRouteImport
       parentRoute: typeof AppRoute
     }
     '/workspaces/$workspaceId/vscode': {

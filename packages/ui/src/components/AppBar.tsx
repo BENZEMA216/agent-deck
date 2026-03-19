@@ -8,8 +8,6 @@ import type { ReactNode } from 'react';
 import {
   LayoutIcon,
   LinkIcon,
-  PlusIcon,
-  KanbanIcon,
   RobotIcon,
   SpinnerIcon,
   StarIcon,
@@ -17,14 +15,7 @@ import {
 import { cn } from '../lib/cn';
 import { AppBarButton } from './AppBarButton';
 import { AppBarSocialLink } from './AppBarSocialLink';
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverClose,
-} from './Popover';
 import { Tooltip } from './Tooltip';
-import { useTranslation } from 'react-i18next';
 
 function formatStarCount(count: number): string {
   if (count < 1000) return String(count);
@@ -111,7 +102,7 @@ export function AppBar({
   projectsLabel,
   onPairHostClick,
   activeHostId = null,
-  onCreateProject,
+  onCreateProject: _onCreateProject,
   onWorkspacesClick,
   onAgentsClick,
   isAgentsActive = false,
@@ -122,10 +113,10 @@ export function AppBar({
   isSavingProjectOrder,
   isWorkspacesActive,
   activeProjectId,
-  isSignedIn,
+  isSignedIn: _isSignedIn,
   isLoadingProjects,
-  onSignIn,
-  onMigrate,
+  onSignIn: _onSignIn,
+  onMigrate: _onMigrate,
   onHoverStart,
   onHoverEnd,
   notificationBell,
@@ -138,7 +129,8 @@ export function AppBar({
   githubIconPath,
   discordIconPath,
 }: AppBarProps) {
-  const { t } = useTranslation('common');
+  // Suppress unused warnings for cloud-only props
+  void _onCreateProject; void _isSignedIn; void _onSignIn; void _onMigrate;
   const showHostsSection =
     showWorkspacesButton || hosts.length > 0 || !!onPairHostClick;
 
@@ -245,61 +237,7 @@ export function AppBar({
         <div className="w-8 h-px bg-border" aria-hidden="true" />
       )}
 
-      {/* Project management popover for unsigned users */}
-      {!isSignedIn && (
-        <Popover>
-          <Tooltip content={t('appBar.kanban.tooltip')} side="right">
-            <PopoverTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  'flex items-center justify-center w-10 h-10 rounded-lg',
-                  'transition-colors cursor-pointer',
-                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand',
-                  'bg-primary text-normal hover:bg-brand/10'
-                )}
-                aria-label={t('appBar.kanban.tooltip')}
-              >
-                <KanbanIcon className="size-icon-base" weight="bold" />
-              </button>
-            </PopoverTrigger>
-          </Tooltip>
-          <PopoverContent side="right" sideOffset={8}>
-            <p className="text-sm font-medium text-high">
-              {t('appBar.kanban.title')}
-            </p>
-            <p className="text-xs text-low mt-1">
-              {t('appBar.kanban.description')}
-            </p>
-            <div className="mt-base flex items-center gap-half">
-              <PopoverClose asChild>
-                <button
-                  type="button"
-                  onClick={onSignIn}
-                  className={cn(
-                    'px-base py-1 rounded-sm text-xs',
-                    'bg-brand text-on-brand hover:bg-brand-hover cursor-pointer'
-                  )}
-                >
-                  {t('signIn')}
-                </button>
-              </PopoverClose>
-              <PopoverClose asChild>
-                <button
-                  type="button"
-                  onClick={onMigrate}
-                  className={cn(
-                    'px-base py-1 rounded-sm text-xs',
-                    'bg-secondary text-normal hover:bg-panel border border-border cursor-pointer'
-                  )}
-                >
-                  {t('appBar.kanban.migrateOldProjects')}
-                </button>
-              </PopoverClose>
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
+      {/* Sign-in / kanban popover removed for local-only use */}
 
       {/* Loading spinner for projects */}
       {isLoadingProjects && (
@@ -378,24 +316,7 @@ export function AppBar({
         </Droppable>
       </DragDropContext>
 
-      {/* Create project button */}
-      {isSignedIn && (
-        <Tooltip content="Create project" side="right">
-          <button
-            type="button"
-            onClick={onCreateProject}
-            className={cn(
-              'flex items-center justify-center w-10 h-10 rounded-lg',
-              'text-sm font-medium transition-colors cursor-pointer',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand',
-              'bg-primary text-muted hover:text-normal hover:bg-tertiary'
-            )}
-            aria-label="Create project"
-          >
-            <PlusIcon size={20} />
-          </button>
-        </Tooltip>
-      )}
+      {/* Create project button removed for local-only use */}
 
       {/* Bottom section: Notifications + User popover + GitHub + Discord */}
       <div className="mt-auto pt-base flex flex-col items-center gap-4">
