@@ -3,6 +3,7 @@ export type AppDestination =
   | { kind: 'onboarding' }
   | { kind: 'onboarding-sign-in' }
   | { kind: 'migrate' }
+  | { kind: 'agents' }
   | { kind: 'workspaces'; hostId?: string }
   | { kind: 'workspaces-create'; hostId?: string }
   | { kind: 'workspace'; workspaceId: string; hostId?: string }
@@ -44,6 +45,7 @@ export interface AppNavigation {
   goToOnboarding(transition?: NavigationTransition): void;
   goToOnboardingSignIn(transition?: NavigationTransition): void;
   goToMigrate(transition?: NavigationTransition): void;
+  goToAgents(transition?: NavigationTransition): void;
   goToWorkspaces(transition?: NavigationTransition): void;
   goToWorkspacesCreate(transition?: NavigationTransition): void;
   goToWorkspace(workspaceId: string, transition?: NavigationTransition): void;
@@ -145,6 +147,12 @@ export function isProjectDestination(
     default:
       return false;
   }
+}
+
+export function isAgentsDestination(
+  destination: AppDestination | null
+): boolean {
+  return destination?.kind === 'agents';
 }
 
 export function isWorkspacesDestination(

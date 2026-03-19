@@ -10,6 +10,7 @@ import {
   LinkIcon,
   PlusIcon,
   KanbanIcon,
+  RobotIcon,
   SpinnerIcon,
   StarIcon,
 } from '@phosphor-icons/react';
@@ -51,6 +52,8 @@ interface AppBarProps {
   activeHostId?: string | null;
   onCreateProject: () => void;
   onWorkspacesClick: () => void;
+  onAgentsClick?: () => void;
+  isAgentsActive?: boolean;
   onHostClick?: (hostId: string, status: AppBarHostStatus) => void;
   showWorkspacesButton?: boolean;
   onProjectClick: (projectId: string) => void;
@@ -110,6 +113,8 @@ export function AppBar({
   activeHostId = null,
   onCreateProject,
   onWorkspacesClick,
+  onAgentsClick,
+  isAgentsActive = false,
   onHostClick,
   showWorkspacesButton = true,
   onProjectClick,
@@ -159,6 +164,14 @@ export function AppBar({
               label="Workspaces"
               isActive={isWorkspacesActive}
               onClick={onWorkspacesClick}
+            />
+          )}
+          {onAgentsClick && (
+            <AppBarButton
+              icon={RobotIcon}
+              label="Agents"
+              isActive={isAgentsActive}
+              onClick={onAgentsClick}
             />
           )}
           {hosts.map((host) => {

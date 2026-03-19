@@ -6,6 +6,7 @@ use tower_http::{compression::CompressionLayer, validate_request::ValidateReques
 
 use crate::{DeploymentImpl, middleware};
 
+pub mod agents;
 pub mod approvals;
 pub mod config;
 pub mod containers;
@@ -50,6 +51,7 @@ pub fn router(deployment: DeploymentImpl) -> IntoMakeService<Router> {
         .merge(releases::router())
         .merge(migration::router())
         .merge(sessions::router(&deployment))
+        .merge(agents::router(&deployment))
         .merge(terminal::router())
         .nest("/remote", remote::router())
         .nest("/attachments", attachments::routes())

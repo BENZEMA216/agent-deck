@@ -1,3 +1,6 @@
+pub mod agent_health_log;
+pub mod agent_metrics;
+pub mod agent_registry;
 pub mod coding_agent_turn;
 pub mod execution_process;
 pub mod execution_process_logs;

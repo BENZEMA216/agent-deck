@@ -33,6 +33,8 @@ function resolveLocalDestinationFromPath(path: string): AppDestination | null {
       return { kind: 'onboarding-sign-in' };
     case '/_app/migrate':
       return { kind: 'migrate' };
+    case '/_app/agents':
+      return { kind: 'agents' };
     case '/_app/workspaces':
       return { kind: 'workspaces' };
     case '/_app/workspaces_/create':
@@ -108,6 +110,8 @@ function destinationToLocalTarget(destination: AppDestination) {
       return { to: '/onboarding/sign-in' } as const;
     case 'migrate':
       return { to: '/migrate' } as const;
+    case 'agents':
+      return { to: '/agents' } as const;
     case 'workspaces':
       return { to: '/workspaces' } as const;
     case 'workspaces-create':
@@ -185,6 +189,7 @@ export function createLocalAppNavigation(): AppNavigation {
     goToOnboardingSignIn: (transition) =>
       navigateTo({ kind: 'onboarding-sign-in' }, transition),
     goToMigrate: (transition) => navigateTo({ kind: 'migrate' }, transition),
+    goToAgents: (transition) => navigateTo({ kind: 'agents' }, transition),
     goToWorkspaces: (transition) =>
       navigateTo({ kind: 'workspaces' }, transition),
     goToWorkspacesCreate: (transition) =>

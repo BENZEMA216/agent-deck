@@ -28,6 +28,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "agent-adapters"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "futures",
+ "reqwest 0.13.2",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-tungstenite 0.26.2",
+ "tracing",
+ "ts-rs 11.0.1",
+ "uuid",
+]
+
+[[package]]
 name = "agent-client-protocol"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7001,6 +7019,7 @@ dependencies = [
 name = "server"
 version = "0.1.32"
 dependencies = [
+ "agent-adapters",
  "anyhow",
  "api-types",
  "aws-lc-rs",

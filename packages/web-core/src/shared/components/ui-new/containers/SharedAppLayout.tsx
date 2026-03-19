@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DropResult } from '@hello-pangea/dnd';
 import { Outlet } from '@tanstack/react-router';
 import { siDiscord, siGithub } from 'simple-icons';
-import { XIcon, PlusIcon, LayoutIcon, KanbanIcon } from '@phosphor-icons/react';
+import { XIcon, PlusIcon, LayoutIcon, KanbanIcon, RobotIcon } from '@phosphor-icons/react';
 import { SyncErrorProvider } from '@/shared/providers/SyncErrorProvider';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { useUiPreferencesStore } from '@/shared/stores/useUiPreferencesStore';
@@ -24,6 +24,7 @@ import { useAppNavigation } from '@/shared/hooks/useAppNavigation';
 import { useCurrentAppDestination } from '@/shared/hooks/useCurrentAppDestination';
 import {
   getProjectDestination,
+  isAgentsDestination,
   isWorkspacesDestination,
 } from '@/shared/lib/routes/appNavigation';
 import {
@@ -169,6 +170,7 @@ export function SharedAppLayout() {
     [currentDestination]
   );
   const isWorkspacesActive = isWorkspacesDestination(currentDestination);
+  const isAgentsActive = isAgentsDestination(currentDestination);
   const isWorkspaceSidebarPreviewEnabled =
     !isMobile && isWorkspacesActive && !isLeftSidebarVisible;
   const activeProjectId = projectDestination?.projectId ?? null;
@@ -189,6 +191,10 @@ export function SharedAppLayout() {
 
   const handleWorkspacesClick = useCallback(() => {
     appNavigation.goToWorkspaces();
+  }, [appNavigation]);
+
+  const handleAgentsClick = useCallback(() => {
+    appNavigation.goToAgents();
   }, [appNavigation]);
 
   const handleProjectClick = useCallback(
@@ -318,6 +324,8 @@ export function SharedAppLayout() {
               projects={orderedProjects}
               onCreateProject={handleCreateProject}
               onWorkspacesClick={handleWorkspacesClick}
+              onAgentsClick={handleAgentsClick}
+              isAgentsActive={isAgentsActive}
               onProjectClick={handleProjectClick}
               onProjectsDragEnd={handleProjectsDragEnd}
               isSavingProjectOrder={isSavingProjectOrder}
@@ -417,6 +425,19 @@ export function SharedAppLayout() {
                 <XIcon className="h-4 w-4" weight="bold" />
               </button>
             </div>
+
+            {/* Agents link */}
+            <button
+              type="button"
+              onClick={() => {
+                appNavigation.goToAgents();
+                setIsDrawerOpen(false);
+              }}
+              className="flex items-center gap-2 px-4 py-3 text-sm text-normal hover:bg-secondary cursor-pointer"
+            >
+              <RobotIcon className="h-4 w-4" />
+              Agents
+            </button>
 
             {/* Workspaces link */}
             <button
